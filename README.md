@@ -77,6 +77,22 @@ Access dashboard at: http://localhost:5000
 <h2>Acknowledgements</h2> <p> This achievement was possible only through immense collaboration and guidance. </p> <p> <b>Special thanks to:</b><br> • Prof. Dr. Pao-Ann Hsiung (CCU)<br> • Dr. Yang Lung-Jieh<br> • Delegation from the Taipei Economic and Cultural Center in India </p> <p> <b>Saintgits Team:</b><br> • Database, Server & Dashboards – Sidharth Sajith, Shahazad Abdulla, Govind Krishna C, Tharun Oommen Jacob<br> • Air Quality Node – Nakul Krishna Ajayan, Abin Abraham, Abhishek P J, Tom Toms<br> • Water Level & Salinity Node – Rishikesh R, Elena Elizabeth Cherian<br> • Drinking Water Quality Node – Emil Phil Vinod </p> <p> <b>Faculty Mentors:</b><br> Nishant Sir, Jyothish Sir, Dr. Pradeep Chandrasekhar, and many others for their constant support and guidance. </p>
 <h2>License</h2>
 
+### Sensor Node Firmware
+
+The firmware for the ESP32-based sensor nodes is located in the `/sensor_nodes` directory. Each node runs custom C++/Arduino code responsible for reading sensors, formatting data into the standard JSON payload, and publishing it via MQTT.
+
+*   **`/sensor_nodes/air_quality_node`**:
+    *   **Sensors:** PM2.5/10 (SDS011), Temperature & Humidity (DHT/AHT), Wind Speed (Anemometer).
+    *   **Publishes to Topic:** `iot/data/air_quality`
+
+*   **`/sensor_nodes/water_level_and_salinity_node`**:
+    *   **Sensors:** Water Level, Salinity.
+    *   **Publishes to Topic:** `iot/data/water_level`
+
+*   **`/sensor_nodes/water_quality_node`**:
+    *   **Sensors:** Water Purity (TDS/PPM).
+    *   **Publishes to Topic:** `iot/data/water_purity`
+
 This project is licensed under the MIT License.
 
 ---
