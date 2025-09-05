@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reading History</title>
+    <!-- Use url_for to correctly link to the favicon in the static folder -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='saintgitslogo.jpg') }}" />
+    <style>
+        body {
+            margin: 0;
+            background: white;
+            color: black;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+        }
+        .NavBar {
+             background-color: rgb(45, 44, 44);
+             padding: 10px;
+             position: fixed;
+             top: 0;
+             width: 100%;
+             z-index: 1000;
+             box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+             font-size: 16px;
+             font-family: "Calibri New", sans-serif;
+             color: white;
+        }
+        .NavBar table {
+             width: 98%;
+        }
+        .NavBar td {
+             vertical-align: middle;
+        }
+        .main-container {
+             margin-top: 100px;
+             padding: 20px;
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+        }
+        .search-container {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            width: 80%;
+            max-width: 600px;
+        }
+        .search-container h2 {
+            margin-top: 0;
+        }
+        #date-input {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .results-container {
+            width: 90%;
+            max-width: 1200px;
+        }
+        /* Tab Styles */
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: -2px; /* Overlap with table border */
+        }
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background-color: #f0f0f0;
+            border-radius: 8px 8px 0 0;
+            font-size: 16px;
+        }
+        .tab-button.active {
+            background-color: #333;
+            color: white;
+        }
+        .tab-content {
+            display: none; /* Hide all tabs by default */
+        }
+        .tab-content.active {
+            display: block; /* Show the active tab */
+        }
+        .history-table { /* Use a class instead of ID for multiple tables */
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .history-table th, .history-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .history-table thead {
+            background-color: #333;
+            color: white;
+        }
+        .history-table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .history-table tbody tr:hover {
+            background-color: #e6e6e6;
+        }
+        .button-link {
+             background-color: #d70707;
+             color: white;
+             padding: 10px 20px;
+             border: none;
+             border-radius: 6px;
+             cursor: pointer;
+             font-size: 16px;
+             transition: background-color 0.3s;
+        }
+        .button-link:hover {
+             background-color: #4c0404;
+             color: white;
+        }
+        footer {
+             text-align: center;
+             margin-top: 40px;
+             padding: 15px;
+             font-size: 14px;
+             color: #000000;
+             border-top: 1px solid #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="NavBar">
+      <table>
+        <tr>
+            <td><h2>Saintgits Sensor Node</h2></td>
+            <td align="right">
+                <button class="button-link" onclick="location.href='/'">Front Page</button>
+                <button class="button-link" onclick="location.href='/air'">Air Quality</button>
+                <button class="button-link" onclick="location.href='/water'">Water Quality</button>
+            </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="main-container">
+        <div class="search-container">
+            <h2>Search Reading History</h2>
+            <input type="date" id="date-input">
+            <button class="button-link" id="search-button">Search</button>
+        </div>
+
+        <div class="results-container">
+            <!-- UPDATED: Three tab buttons -->
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="showTab('air')">Air Node</button>
+                <button class="tab-button" onclick="showTab('water1')">Water Node 1 (Level/Conductivity)</button>
+                <button class="tab-button" onclick="showTab('water2')">Water Node 2 (TDS)</button>
+            </div>
+
+            <!-- Air Quality Table (Node 1) -->
+            <div id="air-tab" class="tab-content active">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Temp (°C)</th>
+                            <th>Humidity (%)</th>
+                            <th>Wind (m/s)</th>
+                            <th>PM2.5 (µg/m³)</th>
+                            <th>PM10 (µg/m³)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="air-table-body">
+                        <!-- JS will populate this -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Water Quality Table (Node 2) -->
+            <div id="water1-tab" class="tab-content">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Water Lvl (cm)</th>
+                            <th>Conductivity (µS/cm)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="water1-table-body">
+                        <!-- JS will populate this -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Water Quality Table (Node 3) -->
+            <div id="water2-tab" class="tab-content">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>TDS (ppm)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="water2-table-body">
+                        <!-- JS will populate this -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Developed by Taiwan ICC Interns
+    </footer>
+
+<script>
+    function showTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+        document.getElementById(tabName + '-tab').classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    async function fetchHistory() {
+        const dateInput = document.getElementById('date-input');
+        const selectedDate = dateInput.value;
+
+        if (!selectedDate) {
+            alert('Please select a date to search.');
+            return;
+        }
+        
+        // Get all table bodies
+        const airTableBody = document.getElementById('air-table-body');
+        const water1TableBody = document.getElementById('water1-table-body');
+        const water2TableBody = document.getElementById('water2-table-body');
+
+        // Set loading messages
+        airTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Loading data...</td></tr>`;
+        water1TableBody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Loading data...</td></tr>`;
+        water2TableBody.innerHTML = `<tr><td colspan="2" style="text-align:center;">Loading data...</td></tr>`;
+
+        try {
+            const response = await fetch(`/search?date=${selectedDate}`);
+            if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+            const data = await response.json();
+            
+            // UPDATED: Filter data into three separate arrays for each node
+            const airData = data.filter(d => d.device_id === 'sensor_node_01');
+            const waterNode1Data = data.filter(d => d.device_id === 'sensor_node_02');
+            const waterNode2Data = data.filter(d => d.device_id === 'sensor_node_03');
+
+            // Populate each table with its specific data
+            populateAirTable(airData);
+            populateWaterNode1Table(waterNode1Data);
+            populateWaterNode2Table(waterNode2Data);
+
+        } catch (error) {
+            console.error('Failed to fetch history:', error);
+            airTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Error loading data.</td></tr>`;
+            water1TableBody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Error loading data.</td></tr>`;
+            water2TableBody.innerHTML = `<tr><td colspan="2" style="text-align:center;">Error loading data.</td></tr>`;
+        }
+    }
+
+    function populateAirTable(data) {
+        const tableBody = document.getElementById('air-table-body');
+        tableBody.innerHTML = '';
+        if (data.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No air quality data found for this date.</td></tr>`;
+            return;
+        }
+        data.forEach(record => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${new Date(record.time_utc).toLocaleString('en-IN')}</td>
+                <td>${record.temperature_c ?? 'N/A'}</td>
+                <td>${record.humidity_pct ?? 'N/A'}</td>
+                <td>${record.wind_speed_ms ?? 'N/A'}</td>
+                <td>${record.pm2_5_ug_m3 ?? 'N/A'}</td>
+                <td>${record.pm10_ug_m3 ?? 'N/A'}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function populateWaterNode1Table(data) {
+        const tableBody = document.getElementById('water1-table-body');
+        tableBody.innerHTML = '';
+        if (data.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No data found for Water Node 1 on this date.</td></tr>`;
+            return;
+        }
+        data.forEach(record => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${new Date(record.time_utc).toLocaleString('en-IN')}</td>
+                <td>${record.water_level_cm ?? 'N/A'}</td>
+                <td>${record.conductivity_us_cm ?? 'N/A'}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // NEW function to populate the table for Node 3
+    function populateWaterNode2Table(data) {
+        const tableBody = document.getElementById('water2-table-body');
+        tableBody.innerHTML = '';
+        if (data.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="2" style="text-align:center;">No data found for Water Node 2 on this date.</td></tr>`;
+            return;
+        }
+        data.forEach(record => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${new Date(record.time_utc).toLocaleString('en-IN')}</td>
+                <td>${record.tds_ppm ?? 'N/A'}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    document.getElementById('search-button').addEventListener('click', fetchHistory);
+
+    // Automatically load today's data when the page opens
+    document.addEventListener('DOMContentLoaded', () => {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date-input').value = today;
+        fetchHistory();
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2 @@
+SELECT * FROM readings LIMIT 0, 10000;TRUNCATE TABLE readings;
+TRUNCATE TABLE devices;	

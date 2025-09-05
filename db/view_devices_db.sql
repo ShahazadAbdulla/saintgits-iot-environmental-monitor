@@ -1,0 +1,1 @@
+SELECT * FROM devices ORDER BY last_seen DESC;

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Sensor Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+        }
+        #dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .device-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+        .device-card:hover {
+            transform: translateY(-5px);
+        }
+        .device-card h2 {
+            margin-top: 0;
+            color: #007bff;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 10px;
+        }
+        .reading {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        .reading span {
+            font-weight: bold;
+            color: #333;
+        }
+        .timestamp {
+            font-size: 0.9em;
+            color: #606770;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Real-Time Environmental Monitor</h1>
+    <div id="dashboard-container">
+        <!-- Device cards will be inserted here by JavaScript -->
+    </div>
+
+    <script>
+        const dashboardContainer = document.getElementById('dashboard-container');
+
+        async function fetchAndUpdateData() {
+            try {
+                const response = await fetch('/get_latest_data');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const devices = await response.json();
+
+                dashboardContainer.innerHTML = ''; // Clear existing cards
+
+                if (devices.length === 0) {
+                    dashboardContainer.innerHTML = '<p>Waiting for sensor data...</p>';
+                }
+
+                devices.forEach(device => {
+                    const card = document.createElement('div');
+                    card.className = 'device-card';
+
+                    // Create a Date object from the UTC string. The 'Z' is important.
+                    const localDate = new Date(device.time_utc + 'Z');
+
+                    // This section is now updated to display all six readings
+                    card.innerHTML = `
+                        <h2>${device.device_id}</h2>
+                        <div class="reading">Temperature: <span>${device.temperature}°C</span></div>
+                        <div class="reading">Humidity: <span>${device.humidity}%</span></div>
+                        <div class="reading">Wind Speed: <span>${device.wind_speed} km/h</span></div>
+                        <div class="reading">Rain Level: <span>${device.rain_level} mm/h</span></div>
+                        <div class="reading">PM2.5: <span>${device.pm2_5} µg/m³</span></div>
+                        <div class="reading">PM10: <span>${device.pm10} µg/m³</span></div>
+                        <div class="timestamp">Last updated: ${localDate.toLocaleString()}</div>
+                    `;
+                    dashboardContainer.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Could not fetch data:", error);
+                dashboardContainer.innerHTML = '<p>Error loading data. Check the console.</p>';
+            }
+        }
+
+        // Fetch data immediately on page load, and then every 5 seconds
+        fetchAndUpdateData();
+        setInterval(fetchAndUpdateData, 5000);
+    </script>
+
+</body>
+</html>
