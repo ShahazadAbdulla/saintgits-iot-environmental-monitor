@@ -14,7 +14,7 @@
 <h2>Project Screenshots</h2>
 
 <p align="center">
-  <img src="assets/dashboard.png" alt="project-screenshot" width="900">
+  <img src="static/intropage.jpeg" alt="project-screenshot" width="900">
 </p>
 
 ---
