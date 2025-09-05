@@ -8,41 +8,41 @@ The platform was officially inaugurated on August 25, 2025, marking a significan
 The web dashboard provides a real-time, at-a-glance view of sensor data from multiple nodes, visualizing both live metrics and historical trends.
 
 ✨ Core Features
-Real-Time Data Visualization: Live gauges and charts update automatically to show the latest sensor readings for air and water quality.
+📈 Real-Time Data Visualization: Live gauges and charts update automatically to show the latest sensor readings.
 
-Multi-Node Support: The system is designed to ingest data from different types of sensor nodes simultaneously.
+📡 Multi-Node Support: Ingests and processes data from different types of sensor nodes simultaneously.
 
-Historical Data Querying: A dedicated history page allows users to search for and view all sensor readings from a specific date, organized by node.
+📂 Historical Data Querying: A dedicated history page allows users to search and view all sensor readings from a specific date.
 
-Decoupled & Robust Architecture: An independent MQTT ingestion service ensures reliable data collection, even if the web server is offline or restarting.
+⚙️ Decoupled & Robust Architecture: An independent MQTT ingestion service ensures reliable data collection.
 
-Flexible Data Ingestion: The listener can handle varied JSON payloads, making it easy to add new sensor types without backend code changes.
+🔌 Flexible Data Ingestion: The listener can handle varied JSON payloads, making it easy to add new sensor types without backend changes.
 
-Efficient Database Schema: Uses a normalized MySQL schema to efficiently store device metadata and high-frequency time-series data.
+🗃️ Efficient Database Schema: Uses a normalized MySQL schema to efficiently store device metadata and time-series data.
 
 🛠️ Technology Stack
-Backend: Python, Flask
+🏗️ System Architecture
+The project follows a classic and effective IoT data pipeline.
 
-Data Ingestion: Paho-MQTT
+<details>
+<summary>Click to view Architecture Diagram</summary>
 
-Database: MySQL
+graph TD;
+    A[Sensor Nodes/ESP32] -- JSON over MQTT --> B(MQTT Broker);
+    B -- Pub/Sub --> C{Python MQTT Listener};
+    C -- SQL INSERT --> D[(MySQL Database)];
+    D -- SQL SELECT --> E[Flask Backend API];
+    E -- REST API (JSON) --> F((Live Web Dashboard));
 
-Frontend: HTML, CSS, JavaScript
+</details>
 
-Charting Library: Chart.js
+Sensor Nodes (Implied): IoT devices publish environmental data as JSON payloads to an MQTT broker.
 
-Protocols: MQTT
+MQTT Broker: A central message bus (e.g., Mosquitto) that routes messages.
 
-⚙️ System Architecture
-The project follows a classic and effective IoT data pipeline:
+Python MQTT Listener (mqtt_listener.py): A persistent background service that subscribes to the broker, receives data, and stores it in the database.
 
-Sensor Nodes (Implied): IoT devices (like ESP32s) publish environmental data as JSON payloads to an MQTT broker.
-
-MQTT Broker: A central message bus (like Mosquitto) that routes messages from publishers to subscribers.
-
-Python MQTT Listener (mqtt_listener.py): A persistent background service that subscribes to the MQTT broker, receives the data, and stores it in the MySQL Database.
-
-MySQL Database: Stores all device information and sensor readings.
+MySQL Database (db.sql): Stores all device information and sensor readings.
 
 Flask Web Server (app.py): Provides a RESTful API to query the database and serves the HTML dashboard pages.
 
@@ -70,12 +70,13 @@ Open your MySQL client (e.g., MySQL Workbench, command line).
 
 Run the db.sql script provided in the repository. This will create the unified_sensor_db database and all necessary tables.
 
-Important: Make sure the database user, password, and host in all .py files match your MySQL setup.
+Important: Update the database credentials (DB_HOST, DB_NAME, DB_USER, DB_PASS) in app.py and mqtt_listener.py to match your local MySQL setup.
 
 Install Python dependencies:
 
-Run the install_dependencies.bat script (on Windows) or install manually using pip:
+Run the installer script (on Windows) or use pip directly:
 
+# Double-click 'install_dependencies.bat' on Windows, or run:
 pip install -r requirements.txt
 
 Running the Application
@@ -93,7 +94,7 @@ This serves the dashboard.
 
 python app.py
 
-The server will start, and you can access the dashboard at http://localhost:5000.
+The server will start. You can now access the dashboard at http://localhost:5000.
 
 Acknowledgements
 This project is a proud outcome of the international collaboration between the AI Center at National Chung Cheng University, Taiwan, led by Prof. Dr. Pao-Ann Hsiung, and Saintgits College of Engineering, India.
