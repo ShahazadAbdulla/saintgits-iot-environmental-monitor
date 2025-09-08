@@ -75,7 +75,6 @@ python app.py
 Access dashboard at: http://localhost:5000
 <h2>Built With</h2> <ul> <li>Backend: Python (Flask, Paho-MQTT)</li> <li>Database: MySQL</li> <li>Frontend: HTML, CSS, JavaScript (Chart.js)</li> <li>Protocol: MQTT</li> </ul>
 <h2>Acknowledgements</h2> <p> This achievement was possible only through immense collaboration and guidance. </p> <p> <b>Special thanks to:</b><br> • Prof. Dr. Pao-Ann Hsiung (CCU)<br> • Dr. Yang Lung-Jieh<br> • Delegation from the Taipei Economic and Cultural Center in India </p> <p> <b>Saintgits Team:</b><br> • Database, Server & Dashboards – Sidharth Sajith, Shahazad Abdulla, Govind Krishna C, Tharun Oommen Jacob<br> • Air Quality Node – Nakul Krishna Ajayan, Abin Abraham, Abhishek P J, Tom Toms<br> • Water Level & Salinity Node – Rishikesh R, Elena Elizabeth Cherian<br> • Drinking Water Quality Node – Emil Phil Vinod </p> <p> <b>Faculty Mentors:</b><br> Nishant Sir, Jyothish Sir, Dr. Pradeep Chandrasekhar, and many others for their constant support and guidance. </p>
-<h2>License</h2>
 
 ### Sensor Node Firmware
 
@@ -93,6 +92,7 @@ The firmware for the ESP32-based sensor nodes is located in the `/sensor_nodes` 
     *   **Sensors:** Water Purity (TDS/PPM).
     *   **Publishes to Topic:** `iot/data/water_purity`
 
+<h2>License</h2>
 This project is licensed under the MIT License.
 
 ---
